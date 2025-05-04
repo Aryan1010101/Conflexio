@@ -12,8 +12,5 @@ export default authMiddleware({
 });
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|favicon.ico|icons).*)',
-    '/(api|trpc)(.*)',
-  ],
+  matcher: ['/((?!_next|favicon.ico|icons).*)'],
 };
