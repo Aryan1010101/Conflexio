@@ -18,22 +18,32 @@ export default function StreamClientProvider({ children }: Props) {
   const [client, setClient] = useState<StreamVideoClient>();
 
   useEffect(() => {
+    console.log('isLoaded:', isLoaded);
+    console.log('user:', user);
+    console.log('API_KEY:', API_KEY);
+
     if (!isLoaded || !user) return;
     if (!API_KEY) throw new Error('Missing Stream API key');
 
-    const videoClient = new StreamVideoClient({
-      apiKey: API_KEY,
-      user: {
-        id:    user.id,
-        name:  user.username || user.id,
-        image: user.imageUrl || undefined,
-      },
-      // instead of HttpTokenProvider, we just give it our async fn
-      tokenProvider,
-    });
+    try {
+      const videoClient = new StreamVideoClient({
+        apiKey: API_KEY,
+        user: {
+          id:    user.id,
+          name:  user.username || user.id,
+          image: user.imageUrl || undefined,
+        },
+        // instead of HttpTokenProvider, we just give it our async fn
+        tokenProvider,
+      });
 
-    setClient(videoClient);
-    return () => void videoClient.disconnectUser();
+      setClient(videoClient);
+      return () => void videoClient.disconnectUser();
+    } catch (error) {
+      console.error('Failed to initialize Stream Video Client:', error);
+      // Ensure loader is shown if client setup fails
+      setClient(undefined); 
+    }
   }, [isLoaded, user]);
 
   if (!client) return <Loader />;
